@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vote App</title>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+      integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+      crossorigin="anonymous"
+    ></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+      body > div {
+        margin-bottom: 20px;
+      }
+    </style>
+    <script>
+      const socket = io();
+      socket.on("votes", (votes) => {
+        console.log("Votes:", votes);
+        setProgress(votes);
+      });
+
+      const setProgress = (votes) => {
+        console.log("BASE", votes.netCore);
+
+        const total = Object.keys(votes).reduce(
+          (t, value) => t + votes[value],
+          0
+        );
+        Object.keys(votes).map((vote, key) => {
+          $(`#${vote} progress`).val(
+            (votes[vote] * 100) / (total === 0 ? 1 : total)
+          );
+          $(`#${vote} div span`).text(votes[vote]);
+        });
+      };
+
+      const sendVote = (voteName) => {
+        socket.emit("newVote", voteName);
+      };
+    </script>
+  </head>
+  <body>
+    <div id="netCore">
+      <div>.Net Core <span></span></div>
+      <progress max="100">32%</progress>
+      <button type="button" onclick="sendVote('netCore')">Oyla!</button>
+    </div>
+    <div id="php">
+      <div>PHP <span></span></div>
+      <progress max="100">32%</progress>
+      <button type="button" onclick="sendVote('php')">Oyla!</button>
+    </div>
+    <div id="javaScript">
+      <div>Javascript <span></span></div>
+      <progress max="100">32%</progress>
+      <button type="button" onclick="sendVote('javaScript')">Oyla!</button>
+    </div>
+    <div id="go">
+      <div>Go <span></span></div>
+      <progress max="100">32%</progress>
+      <button type="button" onclick="sendVote('go')">Oyla!</button>
+    </div>
+  </body>
+</html>
